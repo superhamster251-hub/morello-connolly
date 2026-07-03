@@ -1,0 +1,31 @@
+{
+  "summary": "First full E2E test run of Morello Connally site. Backend: 17/17 pytest cases pass (packages, bookings, contacts, auth for both admins, admin RBAC, Stripe checkout creation + validation + status). Frontend: home page renders with all expected data-testids (hero, 3 pricing cards, schedule calendar/time-slot, founders phones), contact form submits, schedule form successfully books an appointment and shows schedule-success-msg, pricing 'Buy' button opens dialog and redirects to checkout.stripe.com. Admin login rejects wrong credentials with error, accepts correct credentials, dashboard shows all 4 tabs, logout returns to /admin/login. No blocking issues found.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": [
+      {"screen": "Global (Dialog)", "issues": ["Radix Dialog missing aria-describedby/Description — accessibility warning in console (non-blocking)"]}
+    ]
+  },
+  "test_report_links": ["/app/backend/tests/backend_test.py", "/app/test_reports/pytest/pytest_results.xml"],
+  "action_items": [
+    "Optional: add DialogDescription to shadcn dialogs (checkout dialog) to silence Radix a11y warnings.",
+    "Optional: verify admin Overview tab label 'Revenue' — text may be rendered as $ amount only; consider labelling clearly."
+  ],
+  "critical_code_review_comments": [
+    "server.py is a single 430-line file — acceptable at current scope but should be split if endpoints grow (auth/, admin/, checkout/ modules).",
+    "CORSMiddleware includes 'http://localhost:3000' in allow_origins alongside FRONTEND_URL — fine for dev/preview but confirm before prod deploy.",
+    "MongoDB _id is properly excluded via projection or doc.pop('_id', None) in all response paths — good.",
+    "bcrypt hashing + JWT (HS256, 8h expiry) implemented correctly; login sets httpOnly cookie AND returns Bearer token for cross-origin preview — matches auth playbook.",
+    "Seed admin routine is idempotent and re-updates password if changed in env — good."
+  ],
+  "updated_files": ["/app/backend/tests/backend_test.py"],
+  "success_rate": {"backend": "100%", "frontend": "100%"},
+  "test_credentials": "ryan@morelloconnally.com / Morello2026!  and  ben@morelloconnally.com / Connally2026!",
+  "seed_data_creation": "Created TEST_-prefixed booking, contact, and Stripe checkout session records during test runs (safe to leave).",
+  "retest_needed": false,
+  "main_agent_can_self_test": true,
+  "context_for_next_testing_agent": "Backend test suite lives at /app/backend/tests/backend_test.py and passes 17/17. Frontend Home/Admin flows validated via Playwright. Stripe integration confirmed with real sk_test_emergent key: session URL points to checkout.stripe.com. Do NOT attempt to complete Stripe payment. Calendar disables Sundays + past dates; use rdp `button[name=\"day\"]:not([disabled])` selector.",
+  "rca of the issue": "N/A — no bugs found."
+}
