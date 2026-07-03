@@ -428,14 +428,33 @@ async def admin_summary(admin: dict = Depends(get_current_admin)):
 # ────────────────────────────────────────────
 app.include_router(api)
 
-frontend_origin = os.environ.get("FRONTEND_URL", "http://localhost:3000")
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=[frontend_origin, "http://localhost:3000"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+# CORS: allow any origin the user configures via CORS_ORIGINS env (comma-separated).
+# Use "*" for wildcard — we reflect the actual origin via regex so credentialed
+# requests (Bearer + cookies) still work (browsers reject literal "*" with credentials).
+cors_env = os.environ.get("CORS_ORIGINS", "*").strip()
+if cors_env == "*" or not cors_env:
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origin_regex=".*",
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+else:
+    origins = [o.strip() for o in cors_env.split(",") if o.strip()]
+    # Always include local dev + the configured FRONTEND_URL for convenience
+    frontend_origin = os.environ.get("FRONTEND_URL")
+    if frontend_origin and frontend_origin not in origins:
+        origins.append(frontend_origin)
+    if "http://localhost:3000" not in origins:
+        origins.append("http://localhost:3000")
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
 
 @app.on_event("shutdown")
 async def shutdown():
