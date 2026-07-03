@@ -108,7 +108,7 @@ export default function ChatBot() {
                 data-testid={CHATBOT.button}
                 onClick={() => setOpen((v) => !v)}
                 aria-label={open ? "Close chat" : "Open chat"}
-                className={`fixed bottom-20 right-6 z-50 flex h-14 w-14 items-center justify-center border border-brand-void bg-brand-signal text-brand-surface shadow-[4px_4px_0_0_var(--brand-void)] transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-brand-signalHover hover:shadow-[6px_6px_0_0_var(--brand-void)] ${open ? "rotate-90" : ""}`}
+                className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center border border-brand-void bg-brand-signal text-brand-surface shadow-[4px_4px_0_0_var(--brand-void)] transition hover:-translate-x-0.5 hover:-translate-y-0.5 hover:bg-brand-signalHover hover:shadow-[6px_6px_0_0_var(--brand-void)] ${open ? "rotate-90" : ""}`}
             >
                 {open ? <X className="h-6 w-6" /> : <MessageCircle className="h-6 w-6" />}
             </button>
@@ -117,7 +117,7 @@ export default function ChatBot() {
             {open && (
                 <div
                     data-testid={CHATBOT.panel}
-                    className="fixed bottom-40 right-6 z-40 flex h-[520px] w-[calc(100vw-3rem)] max-w-[380px] flex-col border border-brand-void bg-brand-base shadow-[8px_8px_0_0_var(--brand-void)]"
+                    className="fixed bottom-24 right-6 z-40 flex h-[520px] w-[calc(100vw-3rem)] max-w-[380px] flex-col border border-brand-void bg-brand-base shadow-[8px_8px_0_0_var(--brand-void)]"
                 >
                     {/* Header */}
                     <div className="flex items-center justify-between border-b border-brand-void bg-brand-void px-4 py-3 text-brand-surface">
