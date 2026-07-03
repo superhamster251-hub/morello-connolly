@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import api from "@/lib/api";
 
 const AuthContext = createContext(null);
@@ -7,18 +7,19 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
-    const fetchMe = async () => {
+    const fetchMe = useCallback(async () => {
         try {
             const { data } = await api.get("/auth/me");
             setUser(data);
-        } catch {
+        } catch (err) {
+            if (err.response?.status !== 401) console.error("auth/me failed:", err);
             setUser(false);
         } finally {
             setLoading(false);
         }
-    };
+    }, []);
 
-    useEffect(() => { fetchMe(); }, []);
+    useEffect(() => { fetchMe(); }, [fetchMe]);
 
     const login = async (email, password) => {
         const { data } = await api.post("/auth/login", { email, password });
@@ -28,7 +29,11 @@ export const AuthProvider = ({ children }) => {
     };
 
     const logout = async () => {
-        try { await api.post("/auth/logout"); } catch {}
+        try {
+            await api.post("/auth/logout");
+        } catch (err) {
+            console.error("logout failed:", err);
+        }
         localStorage.removeItem("mc_admin_token");
         setUser(false);
     };

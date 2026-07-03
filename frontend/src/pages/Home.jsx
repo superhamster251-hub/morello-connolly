@@ -546,7 +546,7 @@ const Testimonials = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-0 border border-brand-void md:grid-cols-3">
                     {quotes.map((q, i) => (
-                        <figure key={i} className={`p-8 ${i < 2 ? "md:border-r" : ""} border-brand-void ${i > 0 ? "border-t md:border-t-0" : ""}`}>
+                        <figure key={q.q} className={`p-8 ${i < 2 ? "md:border-r" : ""} border-brand-void ${i > 0 ? "border-t md:border-t-0" : ""}`}>
                             <blockquote className="font-heading text-xl font-bold leading-tight md:text-2xl">"{q.q}"</blockquote>
                             <figcaption className="mt-6 font-mono-label text-brand-muted">— {q.a}</figcaption>
                         </figure>

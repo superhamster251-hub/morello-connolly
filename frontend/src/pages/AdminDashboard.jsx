@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { LogOut, DollarSign, Calendar as CalIcon, MessageSquare, TrendingUp } from "lucide-react";
@@ -9,6 +9,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { ADMIN } from "@/constants/testIds";
+
+const UNAUTHORIZED_STATUS = 401;
 
 const StatCard = ({ label, value, icon: Icon, tid }) => (
     <div data-testid={tid} className="border border-brand-void bg-brand-surface p-6">
@@ -44,7 +46,7 @@ export default function AdminDashboard() {
         if (!user || user.role !== "admin") navigate("/admin/login", { replace: true });
     }, [user, loading, navigate]);
 
-    const fetchAll = async () => {
+    const fetchAll = useCallback(async () => {
         try {
             const [s, b, p, c] = await Promise.all([
                 api.get("/admin/summary"),
@@ -57,11 +59,11 @@ export default function AdminDashboard() {
             setPurchases(p.data.items);
             setContacts(c.data.items);
         } catch (e) {
-            if (e.response?.status === 401) navigate("/admin/login", { replace: true });
+            if (e.response?.status === UNAUTHORIZED_STATUS) navigate("/admin/login", { replace: true });
         }
-    };
+    }, [navigate]);
 
-    useEffect(() => { if (user && user.role === "admin") fetchAll(); }, [user]);
+    useEffect(() => { if (user && user.role === "admin") fetchAll(); }, [user, fetchAll]);
 
     const doLogout = async () => {
         await logout();

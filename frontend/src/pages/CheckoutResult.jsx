@@ -5,6 +5,9 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { CHECKOUT_RESULT } from "@/constants/testIds";
 
+const POLL_INTERVAL_MS = 2500;
+const MAX_POLL_ATTEMPTS = 8;
+
 export default function CheckoutResult({ mode }) {
     const [params] = useSearchParams();
     const [status, setStatus] = useState("checking");
@@ -17,8 +20,6 @@ export default function CheckoutResult({ mode }) {
         if (!sid) { setStatus("error"); return; }
 
         let attempts = 0;
-        const maxAttempts = 8;
-        const interval = 2500;
 
         const poll = async () => {
             try {
@@ -30,9 +31,10 @@ export default function CheckoutResult({ mode }) {
                 }
                 if (data.status === "expired") { setStatus("expired"); return; }
                 attempts += 1;
-                if (attempts >= maxAttempts) { setStatus("timeout"); return; }
-                setTimeout(poll, interval);
-            } catch {
+                if (attempts >= MAX_POLL_ATTEMPTS) { setStatus("timeout"); return; }
+                setTimeout(poll, POLL_INTERVAL_MS);
+            } catch (err) {
+                console.error("checkout status poll failed:", err);
                 setStatus("error");
             }
         };

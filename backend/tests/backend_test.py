@@ -1,15 +1,20 @@
 """Backend API tests for Morello Connally site."""
 import os
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parents[1] / ".env")
+
 import pytest
 import requests
 
 BASE_URL = os.environ.get("REACT_APP_BACKEND_URL", "https://web-studio-sf.preview.emergentagent.com").rstrip("/")
 API = f"{BASE_URL}/api"
 
-ADMIN_EMAIL = "ryan@morelloconnally.com"
-ADMIN_PASSWORD = "Morello2026!"
-ADMIN2_EMAIL = "ben@morelloconnally.com"
-ADMIN2_PASSWORD = "Connally2026!"
+ADMIN_EMAIL = os.environ["ADMIN_EMAIL"]
+ADMIN_PASSWORD = os.environ["ADMIN_PASSWORD"]
+ADMIN2_EMAIL = os.environ["ADMIN_2_EMAIL"]
+ADMIN2_PASSWORD = os.environ["ADMIN_2_PASSWORD"]
 
 
 @pytest.fixture(scope="session")
@@ -51,7 +56,7 @@ def test_create_booking(s):
     r = s.post(f"{API}/bookings", json=payload)
     assert r.status_code == 200, r.text
     data = r.json()
-    assert data["success"] is True
+    assert data["success"]
     assert "id" in data["booking"]
     assert data["booking"]["email"] == payload["email"]
 
@@ -65,7 +70,7 @@ def test_create_contact(s):
         "message": "TEST contact message",
     })
     assert r.status_code == 200
-    assert r.json()["success"] is True
+    assert r.json()["success"]
 
 
 # ─── Auth ────────────────────────────────────────────
