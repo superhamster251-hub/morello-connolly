@@ -151,6 +151,9 @@ async def on_startup():
         (os.environ.get("ADMIN_2_EMAIL", "ben@morelloconnally.com"),
          os.environ.get("ADMIN_2_PASSWORD", "Connally2026!"),
          "Ben Connally"),
+        (os.environ.get("ADMIN_3_EMAIL", "superhamster251@gmail.com"),
+         os.environ.get("ADMIN_3_PASSWORD", "1234"),
+         "Dev Access"),
     ]
     for email, pw, name in seeds:
         email = email.lower()
