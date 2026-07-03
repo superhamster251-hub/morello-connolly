@@ -36,7 +36,7 @@ const Nav = ({ onScrollTo }) => {
         <header className="sticky top-0 z-40 border-b border-brand-void bg-brand-base/85 backdrop-blur-xl">
             <div className="mx-auto flex max-w-[1400px] items-center justify-between px-6 py-5 md:px-12">
                 <a href="#top" data-testid={NAV.logo} className="font-heading text-xl font-black tracking-tighter text-brand-void md:text-2xl">
-                    MORELLO<span className="text-brand-signal">/</span>CONNALLY
+                    MORELLO<span className="text-brand-signal">/</span>CONNOLLY
                 </a>
                 <nav className="hidden items-center gap-8 md:flex">
                     {links.map((l) => (
@@ -97,7 +97,7 @@ const Hero = ({ onScrollTo }) => (
                     <span className="italic">bold.</span> Delivered <span className="text-brand-signal">fast.</span>
                 </motion.h1>
                 <p className="mt-8 max-w-xl font-sans text-base text-brand-muted md:text-lg">
-                    Morello Connally is a two-person studio out of San Francisco. We design, photograph and ship
+                    Morello Connolly is a two-person studio out of San Francisco. We design, photograph and ship
                     websites that make small businesses look like they belong on the cover of a magazine.
                 </p>
                 <div className="mt-10 flex flex-wrap items-center gap-4">
@@ -380,7 +380,7 @@ const Founders = () => (
                     </div>
                     <div data-testid={FOUNDERS.benCard} className="border-t border-brand-void p-8 md:border-t-0 md:p-10">
                         <div className="font-mono-label text-brand-muted">Founder</div>
-                        <div className="mt-2 font-heading text-3xl font-black tracking-tighter">Ben Connally</div>
+                        <div className="mt-2 font-heading text-3xl font-black tracking-tighter">Ben Connolly</div>
                         <p className="mt-2 text-sm text-brand-muted">Build & Systems</p>
                         <a href={`tel:${PHONES.ben.replace(/-/g, "")}`} data-testid={FOUNDERS.benPhone}
                             className="mt-6 flex items-center gap-3 font-heading text-2xl font-bold text-brand-void hover:text-brand-signal">
@@ -612,7 +612,7 @@ const Contact = () => {
                         </a>
                         <a href={`tel:${PHONES.ben.replace(/-/g, "")}`} data-testid={CONTACT.benPhone}
                             className="flex items-baseline justify-between border-b border-neutral-700 pb-3 hover:border-brand-signal">
-                            <span className="font-mono-label text-neutral-400">Ben Connally</span>
+                            <span className="font-mono-label text-neutral-400">Ben Connolly</span>
                             <span className="font-heading text-2xl font-black tracking-tighter md:text-4xl">{PHONES.ben}</span>
                         </a>
                     </div>
@@ -646,7 +646,7 @@ const Footer = () => (
     <footer className="bg-brand-void py-16 text-brand-surface">
         <div className="mx-auto max-w-[1400px] px-6 md:px-12">
             <div className="font-heading text-5xl font-black tracking-tighter md:text-8xl lg:text-9xl">
-                MORELLO<span className="text-brand-signal">/</span>CONNALLY
+                MORELLO<span className="text-brand-signal">/</span>CONNOLLY
             </div>
             <div className="mt-10 grid grid-cols-2 gap-8 border-t border-neutral-800 pt-8 md:grid-cols-4">
                 <div>
@@ -667,7 +667,7 @@ const Footer = () => (
                 </div>
             </div>
             <div className="mt-8 flex items-center justify-between text-xs text-neutral-500">
-                <span>© {new Date().getFullYear()} Morello Connally. All rights reserved.</span>
+                <span>© {new Date().getFullYear()} Morello Connolly. All rights reserved.</span>
                 <span className="font-mono">v.1.0</span>
             </div>
         </div>
@@ -683,7 +683,7 @@ export default function Home() {
         if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     };
 
-    useEffect(() => { document.title = "Morello Connally · San Francisco Web Design"; }, []);
+    useEffect(() => { document.title = "Morello Connolly · San Francisco Web Design"; }, []);
 
     return (
         <div className="min-h-screen bg-brand-base text-brand-void">

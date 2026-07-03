@@ -16,7 +16,7 @@ export default function AdminLogin() {
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        document.title = "Admin · Morello Connally";
+        document.title = "Admin · Morello Connolly";
         if (user && user.role === "admin") navigate("/admin", { replace: true });
     }, [user, navigate]);
 
@@ -44,13 +44,13 @@ export default function AdminLogin() {
                 <form onSubmit={submit} className="border border-brand-void bg-brand-surface p-8">
                     <div className="font-mono-label text-brand-muted">Restricted</div>
                     <h1 className="mt-2 font-heading text-3xl font-black tracking-tighter">Admin login</h1>
-                    <p className="mt-2 text-sm text-brand-muted">For Morello Connally staff only.</p>
+                    <p className="mt-2 text-sm text-brand-muted">For Morello Connolly staff only.</p>
                     <div className="mt-6 space-y-4">
                         <div>
                             <Label className="font-mono-label">Email</Label>
                             <Input data-testid={ADMIN.emailInput} type="email" value={email}
                                 onChange={(e) => setEmail(e.target.value)}
-                                className="mt-1 rounded-none border-brand-void" placeholder="ryan@morelloconnally.com" />
+                                className="mt-1 rounded-none border-brand-void" placeholder="ryan@morelloconnolly.com" />
                         </div>
                         <div>
                             <Label className="font-mono-label">Password</Label>

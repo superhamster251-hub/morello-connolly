@@ -41,7 +41,7 @@ export default function AdminDashboard() {
     const [tab, setTab] = useState("overview");
 
     useEffect(() => {
-        document.title = "Dashboard · Morello Connally";
+        document.title = "Dashboard · Morello Connolly";
         if (loading) return;
         if (!user || user.role !== "admin") navigate("/admin/login", { replace: true });
     }, [user, loading, navigate]);
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
                     <div>
                         <div className="font-mono-label text-brand-muted">Control room</div>
                         <div className="font-heading text-xl font-black tracking-tighter">
-                            MORELLO<span className="text-brand-signal">/</span>CONNALLY
+                            MORELLO<span className="text-brand-signal">/</span>CONNOLLY
                         </div>
                     </div>
                     <div className="flex items-center gap-4">

@@ -14,7 +14,7 @@ export default function CheckoutResult({ mode }) {
     const [payment, setPayment] = useState(null);
 
     useEffect(() => {
-        document.title = mode === "success" ? "Payment · Morello Connally" : "Cancelled · Morello Connally";
+        document.title = mode === "success" ? "Payment · Morello Connolly" : "Cancelled · Morello Connolly";
         if (mode !== "success") return;
         const sid = params.get("session_id");
         if (!sid) { setStatus("error"); return; }

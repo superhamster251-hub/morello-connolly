@@ -38,7 +38,7 @@ db = client[DB_NAME]
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
 
-app = FastAPI(title="Morello Connally API")
+app = FastAPI(title="Morello Connolly API")
 api = APIRouter(prefix="/api")
 
 # ────────────────────────────────────────────
@@ -152,12 +152,12 @@ async def on_startup():
     await db.purchases.create_index("session_id", unique=True)
 
     seeds = [
-        (os.environ.get("ADMIN_EMAIL", "ryan@morelloconnally.com"),
+        (os.environ.get("ADMIN_EMAIL", "ryan@morelloconnolly.com"),
          os.environ.get("ADMIN_PASSWORD", "Morello2026!"),
          "Ryan Morello"),
-        (os.environ.get("ADMIN_2_EMAIL", "ben@morelloconnally.com"),
-         os.environ.get("ADMIN_2_PASSWORD", "Connally2026!"),
-         "Ben Connally"),
+        (os.environ.get("ADMIN_2_EMAIL", "ben@morelloconnolly.com"),
+         os.environ.get("ADMIN_2_PASSWORD", "Connolly2026!"),
+         "Ben Connolly"),
         (os.environ.get("ADMIN_3_EMAIL", "superhamster251@gmail.com"),
          os.environ.get("ADMIN_3_PASSWORD", "1234"),
          "Dev Access"),
@@ -184,7 +184,7 @@ async def on_startup():
 # ────────────────────────────────────────────
 @api.get("/")
 async def root():
-    return {"service": "Morello Connally API", "status": "ok"}
+    return {"service": "Morello Connolly API", "status": "ok"}
 
 @api.get("/packages")
 async def get_packages():
@@ -284,7 +284,7 @@ async def create_checkout(payload: CheckoutCreate, http_request: Request):
         "include_monthly": "true" if payload.include_monthly else "false",
         "monthly_maintenance": str(monthly),
         "photo_refresh_included": "true" if photo_refresh else "false",
-        "source": "morello_connally_web",
+        "source": "morello_connolly_web",
     }
     req = CheckoutSessionRequest(
         amount=total,

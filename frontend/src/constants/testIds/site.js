@@ -1,4 +1,4 @@
-// Test IDs for Morello Connally marketing site & admin dashboard.
+// Test IDs for Morello Connolly marketing site & admin dashboard.
 
 export const NAV = {
     logo: 'nav-logo',

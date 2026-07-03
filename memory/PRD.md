@@ -1,7 +1,7 @@
-# Morello Connally — Product Requirements
+# Morello Connolly — Product Requirements
 
 ## Original Problem Statement
-Build a website for Morello Connally, a two-person web-design agency based in San Francisco, CA, founded by Ryan Morello (510-631-5990) and Ben Connally (510-827-3471). Site should let visitors:
+Build a website for Morello Connolly, a two-person web-design agency based in San Francisco, CA, founded by Ryan Morello (510-631-5990) and Ben Connolly (510-827-3471). Site should let visitors:
 - Schedule a call/meeting
 - Purchase website packages (one-time)
 - Optionally add a monthly maintenance / custom-domain fee ($10-$100/mo)

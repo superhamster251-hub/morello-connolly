@@ -1,4 +1,4 @@
-"""Backend API tests for Morello Connally site."""
+"""Backend API tests for Morello Connolly site."""
 import os
 from pathlib import Path
 from dotenv import load_dotenv
