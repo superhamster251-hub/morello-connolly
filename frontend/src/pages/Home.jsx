@@ -259,13 +259,13 @@ const Services = () => {
         {
             id: "professional", label: "Creator", name: "The Creator Package", price: 500, tid: PRICING.professionalCard, btnTid: PRICING.professionalBuyBtn,
             icon: Camera, featured: true,
-            tagline: "Photos we take, editing we obsess over.",
+            tagline: "Curated to fit your business needs.",
             features: ["Everything in Essential", "On-site photography session", "Professional photo editing", "Up to 8 pages", "Analytics dashboard"],
         },
         {
             id: "premium", label: "Executive", name: "The Executive Package", price: 750, tid: PRICING.premiumCard, btnTid: PRICING.premiumBuyBtn,
             icon: CreditCard,
-            tagline: "Sell, book & grow — from day one.",
+            tagline: "Sell, book & scale your business — from day one.",
             features: ["Everything in Creator", "Credit card / Stripe terminals", "Email list & newsletter setup", "Meeting scheduler", "Priority build queue"],
         },
     ];
