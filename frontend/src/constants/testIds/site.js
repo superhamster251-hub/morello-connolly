@@ -23,11 +23,12 @@ export const PRICING = {
     starterBuyBtn: 'pricing-starter-buy-btn',
     professionalBuyBtn: 'pricing-professional-buy-btn',
     premiumBuyBtn: 'pricing-premium-buy-btn',
-    monthlyInput: 'pricing-monthly-input',
     checkoutDialog: 'pricing-checkout-dialog',
     checkoutName: 'checkout-name-input',
     checkoutEmail: 'checkout-email-input',
     checkoutPhone: 'checkout-phone-input',
+    checkoutMonthlyToggle: 'checkout-monthly-toggle',
+    checkoutTotal: 'checkout-total',
     checkoutSubmit: 'checkout-submit-btn',
 };
 

@@ -65,6 +65,9 @@ PACKAGES = {
     },
 }
 
+MONTHLY_MAINTENANCE_PRICE = 20.00
+PHOTO_REFRESH_TIERS = {"professional", "premium"}
+
 # ────────────────────────────────────────────
 # Models
 # ────────────────────────────────────────────
@@ -92,7 +95,7 @@ class CheckoutCreate(BaseModel):
     customer_name: str
     customer_email: EmailStr
     customer_phone: Optional[str] = ""
-    monthly_maintenance: Optional[float] = 0.0   # $10-$100 optional first month add-on
+    include_monthly: Optional[bool] = False   # $20/mo custom domain + upkeep (first month charged today)
 
 # ────────────────────────────────────────────
 # Auth helpers
@@ -257,12 +260,10 @@ async def create_checkout(payload: CheckoutCreate, http_request: Request):
         raise HTTPException(status_code=400, detail="Invalid package")
 
     pkg = PACKAGES[payload.package_id]
-    monthly = float(payload.monthly_maintenance or 0.0)
-    if monthly and not (10.0 <= monthly <= 100.0):
-        raise HTTPException(status_code=400, detail="Monthly maintenance must be between $10 and $100")
+    monthly = MONTHLY_MAINTENANCE_PRICE if payload.include_monthly else 0.0
+    photo_refresh = bool(payload.include_monthly) and pkg["id"] in PHOTO_REFRESH_TIERS
 
-    total = float(pkg["amount"]) + monthly
-    total = round(total, 2)
+    total = round(float(pkg["amount"]) + monthly, 2)
 
     origin = payload.origin_url.rstrip("/")
     success_url = f"{origin}/checkout/success?session_id={{CHECKOUT_SESSION_ID}}"
@@ -276,7 +277,9 @@ async def create_checkout(payload: CheckoutCreate, http_request: Request):
         "customer_name": payload.customer_name,
         "customer_email": payload.customer_email.lower(),
         "customer_phone": payload.customer_phone or "",
+        "include_monthly": "true" if payload.include_monthly else "false",
         "monthly_maintenance": str(monthly),
+        "photo_refresh_included": "true" if photo_refresh else "false",
         "source": "morello_connally_web",
     }
     req = CheckoutSessionRequest(
@@ -296,7 +299,9 @@ async def create_checkout(payload: CheckoutCreate, http_request: Request):
         "customer_name": payload.customer_name,
         "customer_email": payload.customer_email.lower(),
         "customer_phone": payload.customer_phone or "",
+        "include_monthly": bool(payload.include_monthly),
         "monthly_maintenance": monthly,
+        "photo_refresh_included": photo_refresh,
         "amount": total,
         "currency": "usd",
         "payment_status": "initiated",

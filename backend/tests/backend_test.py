@@ -113,7 +113,7 @@ def test_checkout_valid(s):
         "customer_name": "TEST_Buyer",
         "customer_email": "test_buyer@example.com",
         "customer_phone": "555-3333",
-        "monthly_maintenance": 0,
+        "include_monthly": False,
     })
     assert r.status_code == 200, r.text
     j = r.json()
@@ -123,6 +123,18 @@ def test_checkout_valid(s):
     st = s.get(f"{API}/checkout/status/{j['session_id']}")
     assert st.status_code == 200
     assert "payment_status" in st.json()
+
+
+def test_checkout_with_monthly(s):
+    r = s.post(f"{API}/checkout/session", json={
+        "package_id": "professional",
+        "origin_url": BASE_URL,
+        "customer_name": "TEST_Buyer2",
+        "customer_email": "test_buyer2@example.com",
+        "include_monthly": True,
+    })
+    assert r.status_code == 200, r.text
+    assert "stripe.com" in r.json()["url"]
 
 
 def test_checkout_invalid_package(s):
@@ -135,21 +147,42 @@ def test_checkout_invalid_package(s):
     assert r.status_code == 400
 
 
-def test_checkout_bad_maintenance(s):
-    r = s.post(f"{API}/checkout/session", json={
-        "package_id": "starter",
-        "origin_url": BASE_URL,
-        "customer_name": "x",
-        "customer_email": "x@x.com",
-        "monthly_maintenance": 5,
-    })
-    assert r.status_code == 400
+# ─── New: verify server-side price enforcement & photo_refresh_included via admin ───
+def _find_purchase(items, session_id):
+    for p in items:
+        if p.get("session_id") == session_id:
+            return p
+    return None
 
-    r2 = s.post(f"{API}/checkout/session", json={
-        "package_id": "starter",
+
+@pytest.mark.parametrize("pkg,include_monthly,expected_amount,expected_refresh", [
+    ("starter", False, 300.0, False),
+    ("starter", True, 320.0, False),
+    ("professional", False, 500.0, False),
+    ("professional", True, 520.0, True),
+    ("premium", False, 750.0, False),
+    ("premium", True, 770.0, True),
+])
+def test_checkout_amount_and_photo_refresh(s, auth_headers, pkg, include_monthly, expected_amount, expected_refresh):
+    r = s.post(f"{API}/checkout/session", json={
+        "package_id": pkg,
         "origin_url": BASE_URL,
-        "customer_name": "x",
-        "customer_email": "x@x.com",
-        "monthly_maintenance": 200,
+        "customer_name": f"TEST_{pkg}_{include_monthly}",
+        "customer_email": f"test_{pkg}_{include_monthly}@example.com",
+        "include_monthly": include_monthly,
     })
-    assert r2.status_code == 400
+    assert r.status_code == 200, r.text
+    session_id = r.json()["session_id"]
+
+    ap = requests.get(f"{API}/admin/purchases", headers=auth_headers)
+    assert ap.status_code == 200
+    rec = _find_purchase(ap.json()["items"], session_id)
+    assert rec is not None, f"purchase for {session_id} not found"
+    assert rec["package_id"] == pkg
+    assert rec["amount"] == expected_amount, f"expected {expected_amount} got {rec['amount']}"
+    assert rec["include_monthly"] is include_monthly
+    assert rec["photo_refresh_included"] is expected_refresh
+    if include_monthly:
+        assert rec["monthly_maintenance"] == 20.0
+    else:
+        assert rec["monthly_maintenance"] == 0.0

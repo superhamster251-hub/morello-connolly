@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Calendar } from "@/components/ui/calendar";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import Marquee from "@/components/site/Marquee";
 import { NAV, HERO, PRICING, FOUNDERS, SCHEDULE, CONTACT } from "@/constants/testIds";
 
@@ -134,11 +135,19 @@ const Hero = ({ onScrollTo }) => (
 // ────────────────────────────────────────────
 // Services / Pricing
 // ────────────────────────────────────────────
-const BuyDialog = ({ pkg, monthly, onClose, testIdPrefix }) => {
+const MONTHLY_UPKEEP_PRICE = 20;
+const PHOTO_REFRESH_TIERS = new Set(["professional", "premium"]);
+
+const BuyDialog = ({ pkg }) => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [phone, setPhone] = useState("");
+    const [includeMonthly, setIncludeMonthly] = useState(false);
     const [loading, setLoading] = useState(false);
+
+    const hasPhotoPerk = PHOTO_REFRESH_TIERS.has(pkg.id);
+    const monthlyAmount = includeMonthly ? MONTHLY_UPKEEP_PRICE : 0;
+    const total = pkg.amount + monthlyAmount;
 
     const submit = async () => {
         if (!name || !email) return toast.error("Name and email required");
@@ -150,7 +159,7 @@ const BuyDialog = ({ pkg, monthly, onClose, testIdPrefix }) => {
                 customer_name: name,
                 customer_email: email,
                 customer_phone: phone,
-                monthly_maintenance: monthly || 0,
+                include_monthly: includeMonthly,
             });
             window.location.href = data.url;
         } catch (e) {
@@ -167,17 +176,48 @@ const BuyDialog = ({ pkg, monthly, onClose, testIdPrefix }) => {
                     <span>{pkg.name}</span>
                     <span>${pkg.amount.toFixed(2)}</span>
                 </div>
-                {monthly > 0 && (
+                {includeMonthly && (
                     <div className="mt-1 flex items-baseline justify-between text-sm text-brand-muted">
-                        <span>+ First month maintenance</span>
-                        <span>${monthly.toFixed(2)}</span>
+                        <span>+ First month upkeep</span>
+                        <span>${MONTHLY_UPKEEP_PRICE.toFixed(2)}</span>
                     </div>
                 )}
                 <div className="mt-3 flex items-baseline justify-between border-t border-brand-void pt-3 font-heading text-xl font-black">
                     <span>Total today</span>
-                    <span className="text-brand-signal">${(pkg.amount + (monthly || 0)).toFixed(2)}</span>
+                    <span data-testid={PRICING.checkoutTotal} className="text-brand-signal">${total.toFixed(2)}</span>
                 </div>
             </div>
+
+            {/* Optional monthly add-on */}
+            <label className="flex cursor-pointer items-start gap-3 border border-brand-void bg-brand-surface p-4 hover:bg-brand-base">
+                <Checkbox
+                    data-testid={PRICING.checkoutMonthlyToggle}
+                    checked={includeMonthly}
+                    onCheckedChange={(v) => setIncludeMonthly(v === true)}
+                    className="mt-1 rounded-none border-brand-void data-[state=checked]:bg-brand-signal data-[state=checked]:text-brand-surface"
+                />
+                <div className="flex-1">
+                    <div className="flex items-baseline justify-between gap-2">
+                        <span className="font-heading text-base font-bold">Add monthly upkeep</span>
+                        <span className="font-mono text-sm text-brand-muted">${MONTHLY_UPKEEP_PRICE}/mo</span>
+                    </div>
+                    <p className="mt-1 text-xs text-brand-muted">
+                        Custom domain, hosting, backups & minor updates. First month is charged today; subsequent months billed separately once your site is live.
+                    </p>
+                    {hasPhotoPerk && (
+                        <div className="mt-3 flex items-start gap-2 border-l-2 border-brand-signal bg-brand-base px-3 py-2">
+                            <Camera className="mt-0.5 h-4 w-4 shrink-0 text-brand-signal" />
+                            <div>
+                                <div className="font-mono-label text-brand-void">Included at no extra cost</div>
+                                <p className="mt-0.5 text-xs text-brand-muted">
+                                    A quarterly photo refresh — we come out and re-shoot your business so your site never looks stale.
+                                </p>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </label>
+
             <div className="space-y-3">
                 <div>
                     <Label className="font-mono-label">Your name</Label>
@@ -205,9 +245,6 @@ const BuyDialog = ({ pkg, monthly, onClose, testIdPrefix }) => {
 };
 
 const Services = () => {
-    const [monthly, setMonthly] = useState(0);
-    const [monthlyInput, setMonthlyInput] = useState("0");
-
     const tiers = [
         {
             id: "starter", name: "Starter", price: 300, tid: PRICING.starterCard, btnTid: PRICING.starterBuyBtn,
@@ -229,14 +266,6 @@ const Services = () => {
         },
     ];
 
-    const setMonthlySafe = (v) => {
-        const n = Number(v);
-        if (isNaN(n) || n < 0) return setMonthly(0);
-        if (n > 0 && n < 10) return setMonthly(10);
-        if (n > 100) return setMonthly(100);
-        setMonthly(n);
-    };
-
     return (
         <section id="services" className="border-b border-brand-void bg-brand-base">
             <div className="mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-28">
@@ -248,8 +277,7 @@ const Services = () => {
                         </h2>
                     </div>
                     <p className="max-w-xl text-brand-muted md:col-span-8 md:text-lg">
-                        Three fixed-price packages. No hourly billing surprises. Optional monthly maintenance keeps your
-                        domain live and your site fresh — you decide the number.
+                        Three fixed-price packages. No hourly billing surprises. Add optional monthly upkeep at checkout — Professional and Premium buyers also get a quarterly photo refresh included.
                     </p>
                 </div>
 
@@ -290,47 +318,12 @@ const Services = () => {
                                         <DialogHeader>
                                             <DialogTitle className="font-heading text-2xl font-black tracking-tighter">Buy {t.name}</DialogTitle>
                                         </DialogHeader>
-                                        <BuyDialog pkg={{ id: t.id, name: t.name, amount: t.price }} monthly={monthly} />
+                                        <BuyDialog pkg={{ id: t.id, name: t.name, amount: t.price }} />
                                     </DialogContent>
                                 </Dialog>
                             </div>
                         );
                     })}
-                </div>
-
-                {/* Monthly addon banner */}
-                <div className="mt-12 border border-brand-void bg-brand-surface p-6 md:p-10">
-                    <div className="grid grid-cols-1 items-center gap-6 md:grid-cols-12">
-                        <div className="md:col-span-7">
-                            <div className="font-mono-label text-brand-muted">Optional add-on</div>
-                            <h3 className="mt-2 font-heading text-2xl font-black tracking-tighter md:text-3xl">
-                                Custom domain <span className="text-brand-signal">+</span> monthly upkeep
-                            </h3>
-                            <p className="mt-2 text-brand-muted">
-                                From $10 to $100 per month — pick your level. We handle the domain, hosting, backups & minor updates.
-                                Charged separately after your website is live.
-                            </p>
-                        </div>
-                        <div className="md:col-span-5">
-                            <Label className="font-mono-label text-brand-muted">First-month maintenance ($10-$100)</Label>
-                            <div className="mt-2 flex items-center gap-3">
-                                <div className="flex items-baseline gap-1 border border-brand-void bg-brand-base px-4 py-3">
-                                    <span className="font-mono text-lg text-brand-muted">$</span>
-                                    <Input
-                                        data-testid={PRICING.monthlyInput}
-                                        type="number"
-                                        min={0}
-                                        max={100}
-                                        value={monthlyInput}
-                                        onChange={(e) => { setMonthlyInput(e.target.value); setMonthlySafe(e.target.value); }}
-                                        className="w-24 border-0 bg-transparent p-0 font-heading text-2xl font-black focus-visible:ring-0"
-                                    />
-                                    <span className="font-mono text-xs text-brand-muted">/mo</span>
-                                </div>
-                                <span className="text-xs text-brand-muted">Added to your first payment.<br />Skip by leaving $0.</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
