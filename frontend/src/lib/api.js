@@ -1,5 +1,7 @@
 import axios from "axios";
 
+// Bearer token is read from localStorage because httpOnly cookies do not always
+// cross the preview origin. See src/context/AuthContext.jsx for the tradeoff note.
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 export const API_BASE = `${BACKEND_URL}/api`;
 

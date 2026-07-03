@@ -34,7 +34,9 @@ export default function CheckoutResult({ mode }) {
                 if (attempts >= MAX_POLL_ATTEMPTS) { setStatus("timeout"); return; }
                 setTimeout(poll, POLL_INTERVAL_MS);
             } catch (err) {
-                console.error("checkout status poll failed:", err);
+                if (process.env.NODE_ENV !== "production") {
+                    console.error("checkout status poll failed:", err);
+                }
                 setStatus("error");
             }
         };
