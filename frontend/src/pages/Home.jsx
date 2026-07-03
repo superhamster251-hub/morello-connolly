@@ -261,13 +261,13 @@ const Services = () => {
             id: "professional", label: "Creator", name: "The Creator Package", price: 500, tid: PRICING.professionalCard, btnTid: PRICING.professionalBuyBtn,
             icon: Camera, featured: true,
             tagline: "Curated to fit your business needs.",
-            features: ["Everything in Essential", "Custom photos", "Meeting scheduler", "Up to 8 pages", "Analytics dashboard", "Quarterly photo re-shoot (with monthly upkeep)"],
+            features: ["Everything in Essential", "Custom photos", "Meeting scheduler", "Up to 8 pages", "Analytics dashboard"],
         },
         {
             id: "premium", label: "Executive", name: "The Executive Package", price: 750, tid: PRICING.premiumCard, btnTid: PRICING.premiumBuyBtn,
             icon: CreditCard,
             tagline: "Sell, book & scale your business — from day one.",
-            features: ["Everything in Creator", "Credit card / Stripe terminals", "Email list & newsletter setup", "Priority build queue", "Quarterly photo re-shoot (with monthly upkeep)"],
+            features: ["Everything in Creator", "Credit card / Stripe terminals", "Email list & newsletter setup", "Priority build queue"],
         },
     ];
 
@@ -329,6 +329,17 @@ const Services = () => {
                             </div>
                         );
                     })}
+                </div>
+
+                {/* Add-ons callout banner */}
+                <div className="mt-6 flex flex-col items-start gap-3 border border-brand-void bg-brand-void px-6 py-4 text-brand-surface md:flex-row md:items-center md:justify-between md:px-8">
+                    <div className="flex items-center gap-3">
+                        <span className="inline-block h-2 w-2 rotate-45 bg-brand-signal" />
+                        <span className="font-mono-label text-neutral-300">Check the add-ons</span>
+                    </div>
+                    <p className="text-sm text-neutral-200 md:text-base">
+                        Every package has its own monthly options — perks and pricing vary. Click <span className="font-heading font-bold text-brand-surface">Purchase</span> above to see what's included at checkout.
+                    </p>
                 </div>
             </div>
         </section>
