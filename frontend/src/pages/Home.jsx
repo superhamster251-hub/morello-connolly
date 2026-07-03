@@ -508,7 +508,7 @@ const Schedule = () => {
 // ────────────────────────────────────────────
 const Testimonials = () => {
     const quotes = [
-        { q: "Ryan and Ben came in, took beautiful photos of the shop, and had our new site up within two weeks. Customers actually tell us the website looks great now.", a: "Café owner · SoMa" },
+        { q: "They came in, took beautiful photos of the shop, and had our new site up within two weeks. Customers actually tell us the website looks great now.", a: "Café owner · SoMa" },
         { q: "We picked Premium and honestly it's been huge — the online store works, we've got a real email list going, and clients can book us straight from the site.", a: "Boutique · Mission" },
         { q: "Fast, friendly and no BS. Highly recommend.", a: "Contractor · Oakland" },
     ];
