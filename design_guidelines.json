@@ -1,0 +1,155 @@
+{
+  "theme": "Light",
+  "archetype": "Archetype 4 (Swiss & High-Contrast)",
+  "emotional_tone": "Professional, authoritative, trustworthy, bold, modern, transparent",
+  "typography": {
+    "headings": {
+      "family": "Cabinet Grotesk",
+      "weight": "font-black to font-bold",
+      "tracking": "tracking-tight to tracking-tighter",
+      "usage": "H1 (text-6xl), H2 (text-4xl), heavily stylized for maximum impact"
+    },
+    "body": {
+      "family": "Satoshi",
+      "weight": "font-normal to font-medium",
+      "tracking": "tracking-normal",
+      "usage": "Clear, legible, geometric body text"
+    },
+    "labels": {
+      "family": "Satoshi",
+      "weight": "font-bold",
+      "tracking": "tracking-[0.2em]",
+      "text_transform": "uppercase",
+      "usage": "Overlines, tags, small UI labels"
+    }
+  },
+  "colors": {
+    "background": {
+      "base": "#F9F9F8",
+      "surface": "#FFFFFF",
+      "inverse": "#0A0A0A"
+    },
+    "text": {
+      "primary": "#0A0A0A",
+      "secondary": "#525252",
+      "inverse": "#FFFFFF",
+      "inverse_secondary": "#A3A3A3"
+    },
+    "accent": {
+      "primary": "#FF2A00",
+      "primary_hover": "#D92300",
+      "primary_text": "#FFFFFF"
+    },
+    "border": {
+      "default": "#0A0A0A",
+      "subtle": "#E5E5E5"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous spacing with strict grid-based alignment. No jagged edges.",
+    "container_padding": "p-6 md:p-12 lg:p-24",
+    "grid_system": "Mode A (Tetris Grid) for marketing, Mode B (Control Room Grid) for dashboard.",
+    "surface_strategy": "Grid Borders (The 'Technical' Look). Expose the skeleton. Heavy use of 1px solid black borders (#0A0A0A) separating sections, eliminating shadows."
+  },
+  "components_and_interactions": {
+    "buttons": "Square or very slightly rounded (rounded-sm). Solid black or solid Signal Red. High contrast hover states. Always include data-testid.",
+    "cards": "Flat background, 1px solid black border, no shadow. Hover: slight lift (-translate-y-1) with a hard drop shadow (shadow-[4px_4px_0px_0px_rgba(10,10,10,1)]).",
+    "inputs": "Shadcn components heavily customized. Square corners, 1px solid border, focus:ring-2 focus:ring-black focus:border-black.",
+    "motion": "Lenis for momentum scrolling. Framer motion for text reveal on scroll. Immediate snappy transitions on hover.",
+    "testing_attributes": "All interactive elements MUST have data-testid in kebab-case."
+  },
+  "pages": {
+    "marketing_site": {
+      "navigation": {
+        "layout": "Sticky header with glassmorphism (backdrop-blur-xl bg-[#F9F9F8]/80) and 1px solid bottom border.",
+        "elements": "Logo (Morello Connally), Links (Services, Work, About), CTA (Book a Call - data-testid='nav-book-call-btn')"
+      },
+      "hero_section": {
+        "layout": "Massive typographic hero. Left aligned H1 (text-5xl md:text-7xl). Right column for supporting paragraph and dual CTAs.",
+        "visuals": "Abstract geometric art image as a structural side element or framed background.",
+        "ctas": "Primary: 'Book a call' (data-testid='hero-book-btn', Signal Red). Secondary: 'See packages' (data-testid='hero-packages-btn', Outline black)."
+      },
+      "about_founders_section": {
+        "layout": "Split 50/50 layout. Left: Crisp imagery of workspace/founders. Right: Bold typography introducing Ryan Morello and Ben Connally.",
+        "data": "Ryan Morello (510-631-5990), Ben Connally (510-827-3471).",
+        "style": "Use the 'Editorial Ribbon' marquee below this section scrolling 'TRUSTED WEB DESIGN IN SAN FRANCISCO'."
+      },
+      "services_pricing_section": {
+        "layout": "3-column CSS Grid (border-collapse style). Each tier is a column with a 1px border. No gaps, pure grid lines.",
+        "tiers": [
+          {
+            "name": "Starter",
+            "price": "$300",
+            "description": "Website with stock photos",
+            "testid": "pricing-starter-btn"
+          },
+          {
+            "name": "Professional",
+            "price": "$500",
+            "description": "Website with custom professional photos (taken and edited by us)",
+            "testid": "pricing-pro-btn"
+          },
+          {
+            "name": "Premium",
+            "price": "$750",
+            "description": "Website with credit card terminals, email list setup, meeting scheduler",
+            "testid": "pricing-premium-btn"
+          }
+        ],
+        "add_on": "Monthly maintenance: $10-$100/mo (Custom domain + upkeep). Styled as a stark banner below the tiers."
+      },
+      "schedule_call_section": {
+        "layout": "Clean calendar integration UI using Shadcn Calendar. Left: 'Let's build something bold'. Right: Date/Time slot picker.",
+        "testid_prefix": "schedule-"
+      },
+      "contact_location_section": {
+        "layout": "Massive text. 'San Francisco, CA'. Display both phone numbers in large typography (text-4xl).",
+        "background": "Golden Gate Bridge image with heavy black overlay (bg-black/60) to maintain high contrast for white text."
+      },
+      "testimonials": {
+        "layout": "Asymmetric bento grid of quotes. Monochromatic, high typographic contrast."
+      },
+      "footer": {
+        "layout": "Dark inverse footer (bg-[#0A0A0A] text-white). Massive 'MORELLO CONNALLY' logo. Links and contact info."
+      }
+    },
+    "checkout_flow": {
+      "layout": "Minimalist centered card layout. Left side: Order summary. Right side: Stripe Checkout elements.",
+      "components": "Shadcn Forms, Inputs, Buttons. Highly sterile and trustworthy (Swiss Design)."
+    },
+    "admin_dashboard": {
+      "layout": "Strict 'Control Room Grid'. Dense, data-heavy. Sidebar navigation, top header.",
+      "sections": "Login Page (centered stark form), Bookings View (Data Table), Purchases View (Data Table).",
+      "style": "No rounded corners, pure 1px borders everywhere. Status badges use Signal Red for pending, Deep Black for completed."
+    }
+  },
+  "media": {
+    "hero_background": {
+      "url": "https://images.pexels.com/photos/545575/pexels-photo-545575.jpeg",
+      "description": "Framed minimalist abstract artwork in sunlit room. Use as a sophisticated artistic background element."
+    },
+    "about_workspace": {
+      "url": "https://images.pexels.com/photos/4348366/pexels-photo-4348366.jpeg",
+      "description": "Aerial view of a bright creative workspace. Fits the agency founder narrative."
+    },
+    "contact_location": {
+      "url": "https://images.unsplash.com/photo-1719858403364-83f7442a197e",
+      "description": "Golden gate bridge surrounded by fog. Use in the Contact section to anchor the San Francisco location."
+    },
+    "geometric_pattern": {
+      "url": "https://images.pexels.com/photos/31757550/pexels-photo-31757550.jpeg",
+      "description": "Bold geometric pattern with triangles. Use as subtle repeating texture or mask image."
+    }
+  },
+  "instructions_to_main_agent": [
+    "Install required dependencies: framer-motion, lenis, @phosphor-icons/react, tailwindcss, shadcn ui primitives.",
+    "Set up Tailwind configuration with the custom colors (Base, Surface, Inverse, Accent) and fonts (Cabinet Grotesk, Satoshi).",
+    "Build the Marketing Site applying the Swiss High-Contrast archetype. Prioritize stark black 1px borders instead of box-shadows. Use 'border-collapse' techniques for the pricing bento grid.",
+    "Implement Shadcn Calendar for the Scheduling section, customizing it to match the square, high-contrast theme.",
+    "Build a robust Stripe checkout UI that uses high-contrast text descriptors for clear, transparent pricing.",
+    "Implement the Admin Dashboard using a dense, control-room style grid layout with Shadcn Data Tables.",
+    "All interactive elements (buttons, forms, links) MUST contain a 'data-testid' attribute (e.g., data-testid='hero-book-btn').",
+    "Never use placeholder image URLs. Rely entirely on the provided media URLs.",
+    "Ensure the hero overlay opacity does not exceed bg-black/50, or use a gradient overlay to preserve image visibility while maintaining text contrast."
+  ]
+}
