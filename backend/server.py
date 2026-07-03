@@ -65,7 +65,11 @@ PACKAGES = {
     },
 }
 
-MONTHLY_MAINTENANCE_PRICE = 20.00
+MONTHLY_MAINTENANCE_PRICES = {
+    "starter": 10.00,
+    "professional": 20.00,
+    "premium": 20.00,
+}
 PHOTO_REFRESH_TIERS = {"professional", "premium"}
 
 # ────────────────────────────────────────────
@@ -260,7 +264,7 @@ async def create_checkout(payload: CheckoutCreate, http_request: Request):
         raise HTTPException(status_code=400, detail="Invalid package")
 
     pkg = PACKAGES[payload.package_id]
-    monthly = MONTHLY_MAINTENANCE_PRICE if payload.include_monthly else 0.0
+    monthly = MONTHLY_MAINTENANCE_PRICES[pkg["id"]] if payload.include_monthly else 0.0
     photo_refresh = bool(payload.include_monthly) and pkg["id"] in PHOTO_REFRESH_TIERS
 
     total = round(float(pkg["amount"]) + monthly, 2)

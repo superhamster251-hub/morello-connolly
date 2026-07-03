@@ -135,7 +135,7 @@ const Hero = ({ onScrollTo }) => (
 // ────────────────────────────────────────────
 // Services / Pricing
 // ────────────────────────────────────────────
-const MONTHLY_UPKEEP_PRICE = 20;
+const MONTHLY_UPKEEP_PRICES = { starter: 10, professional: 20, premium: 20 };
 const PHOTO_REFRESH_TIERS = new Set(["professional", "premium"]);
 
 const BuyDialog = ({ pkg }) => {
@@ -147,7 +147,8 @@ const BuyDialog = ({ pkg }) => {
 
     const hasCustomPhotoPerk = PHOTO_REFRESH_TIERS.has(pkg.id);
     const isEssential = pkg.id === "starter";
-    const monthlyAmount = includeMonthly ? MONTHLY_UPKEEP_PRICE : 0;
+    const monthlyPrice = MONTHLY_UPKEEP_PRICES[pkg.id];
+    const monthlyAmount = includeMonthly ? monthlyPrice : 0;
     const total = pkg.amount + monthlyAmount;
 
     const monthlyTitle = isEssential ? "Add monthly stock photo refresh" : "Add monthly upkeep";
@@ -185,7 +186,7 @@ const BuyDialog = ({ pkg }) => {
                 {includeMonthly && (
                     <div className="mt-1 flex items-baseline justify-between text-sm text-brand-muted">
                         <span>+ First month {isEssential ? "photo refresh" : "upkeep"}</span>
-                        <span>${MONTHLY_UPKEEP_PRICE.toFixed(2)}</span>
+                        <span>${monthlyPrice.toFixed(2)}</span>
                     </div>
                 )}
                 <div className="mt-3 flex items-baseline justify-between border-t border-brand-void pt-3 font-heading text-xl font-black">
@@ -205,7 +206,7 @@ const BuyDialog = ({ pkg }) => {
                 <div className="flex-1">
                     <div className="flex items-baseline justify-between gap-2">
                         <span className="font-heading text-base font-bold">{monthlyTitle}</span>
-                        <span className="font-mono text-sm text-brand-muted">${MONTHLY_UPKEEP_PRICE}/mo</span>
+                        <span className="font-mono text-sm text-brand-muted">${monthlyPrice}/mo</span>
                     </div>
                     <p className="mt-1 text-xs text-brand-muted">{monthlyDesc}</p>
                     {hasCustomPhotoPerk && includeMonthly && (
@@ -260,13 +261,13 @@ const Services = () => {
             id: "professional", label: "Creator", name: "The Creator Package", price: 500, tid: PRICING.professionalCard, btnTid: PRICING.professionalBuyBtn,
             icon: Camera, featured: true,
             tagline: "Curated to fit your business needs.",
-            features: ["Everything in Essential", "On-site photography session", "Professional photo editing", "Up to 8 pages", "Analytics dashboard"],
+            features: ["Everything in Essential", "On-site photography session", "Professional photo editing", "Up to 8 pages", "Analytics dashboard", "Quarterly photo re-shoot (with monthly upkeep)"],
         },
         {
             id: "premium", label: "Executive", name: "The Executive Package", price: 750, tid: PRICING.premiumCard, btnTid: PRICING.premiumBuyBtn,
             icon: CreditCard,
             tagline: "Sell, book & scale your business — from day one.",
-            features: ["Everything in Creator", "Credit card / Stripe terminals", "Email list & newsletter setup", "Meeting scheduler", "Priority build queue"],
+            features: ["Everything in Creator", "Credit card / Stripe terminals", "Email list & newsletter setup", "Meeting scheduler", "Priority build queue", "Quarterly photo re-shoot (with monthly upkeep)"],
         },
     ];
 

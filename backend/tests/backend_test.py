@@ -163,7 +163,7 @@ def _find_purchase(items, session_id):
 
 @pytest.mark.parametrize("pkg,include_monthly,expected_amount,expected_refresh", [
     ("starter", False, 300.0, False),
-    ("starter", True, 320.0, False),
+    ("starter", True, 310.0, False),
     ("professional", False, 500.0, False),
     ("professional", True, 520.0, True),
     ("premium", False, 750.0, False),
@@ -189,6 +189,7 @@ def test_checkout_amount_and_photo_refresh(s, auth_headers, pkg, include_monthly
     assert rec["include_monthly"] is include_monthly
     assert rec["photo_refresh_included"] is expected_refresh
     if include_monthly:
-        assert rec["monthly_maintenance"] == 20.0
+        expected_monthly = 10.0 if pkg == "starter" else 20.0
+        assert rec["monthly_maintenance"] == expected_monthly
     else:
         assert rec["monthly_maintenance"] == 0.0
