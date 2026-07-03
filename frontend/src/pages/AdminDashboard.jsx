@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
-import { LogOut, DollarSign, Calendar as CalIcon, MessageSquare, TrendingUp } from "lucide-react";
+import { LogOut, DollarSign, Calendar as CalIcon, MessageSquare, TrendingUp, MessagesSquare } from "lucide-react";
 import api from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
 import { Button } from "@/components/ui/button";
@@ -38,6 +38,7 @@ export default function AdminDashboard() {
     const [bookings, setBookings] = useState([]);
     const [purchases, setPurchases] = useState([]);
     const [contacts, setContacts] = useState([]);
+    const [chats, setChats] = useState([]);
     const [tab, setTab] = useState("overview");
 
     useEffect(() => {
@@ -48,16 +49,18 @@ export default function AdminDashboard() {
 
     const fetchAll = useCallback(async () => {
         try {
-            const [s, b, p, c] = await Promise.all([
+            const [s, b, p, c, ch] = await Promise.all([
                 api.get("/admin/summary"),
                 api.get("/admin/bookings"),
                 api.get("/admin/purchases"),
                 api.get("/admin/contacts"),
+                api.get("/admin/chats"),
             ]);
             setSummary(s.data);
             setBookings(b.data.items);
             setPurchases(p.data.items);
             setContacts(c.data.items);
+            setChats(ch.data.items);
         } catch (e) {
             if (e.response?.status === UNAUTHORIZED_STATUS) navigate("/admin/login", { replace: true });
         }
@@ -103,14 +106,16 @@ export default function AdminDashboard() {
                         <TabsTrigger data-testid={ADMIN.tabBookings} value="bookings" className="rounded-none data-[state=active]:bg-brand-void data-[state=active]:text-brand-surface">Bookings</TabsTrigger>
                         <TabsTrigger data-testid={ADMIN.tabPurchases} value="purchases" className="rounded-none data-[state=active]:bg-brand-void data-[state=active]:text-brand-surface">Purchases</TabsTrigger>
                         <TabsTrigger data-testid={ADMIN.tabContacts} value="contacts" className="rounded-none data-[state=active]:bg-brand-void data-[state=active]:text-brand-surface">Contacts</TabsTrigger>
+                        <TabsTrigger data-testid={ADMIN.tabChats} value="chats" className="rounded-none data-[state=active]:bg-brand-void data-[state=active]:text-brand-surface">Chats</TabsTrigger>
                     </TabsList>
 
                     <TabsContent value="overview" className="mt-6">
-                        <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-5">
                             <StatCard tid={ADMIN.revenue} label="Revenue" value={`$${(summary?.revenue ?? 0).toFixed(2)}`} icon={DollarSign} />
                             <StatCard tid={ADMIN.purchasesCount} label="Paid orders" value={summary?.paid_purchases ?? 0} icon={TrendingUp} />
                             <StatCard tid={ADMIN.bookingsCount} label="Meeting requests" value={summary?.bookings ?? 0} icon={CalIcon} />
                             <StatCard label="Contact messages" value={summary?.contacts ?? 0} icon={MessageSquare} />
+                            <StatCard tid={ADMIN.chatsCount} label="Chat conversations" value={summary?.chats ?? 0} icon={MessagesSquare} />
                         </div>
                     </TabsContent>
 
@@ -201,6 +206,40 @@ export default function AdminDashboard() {
                                     ))}
                                 </TableBody>
                             </Table>
+                        </div>
+                    </TabsContent>
+
+                    <TabsContent value="chats" className="mt-6">
+                        <div className="grid grid-cols-1 gap-4">
+                            {chats.length === 0 ? (
+                                <div className="border border-brand-void bg-brand-surface p-10 text-center text-brand-muted">
+                                    No chat conversations yet.
+                                </div>
+                            ) : chats.map((c) => (
+                                <div key={c.session_id} className="border border-brand-void bg-brand-surface">
+                                    <div className="flex items-center justify-between border-b border-brand-void bg-brand-void px-4 py-3 text-brand-surface">
+                                        <div>
+                                            <div className="font-mono-label text-neutral-400">
+                                                {c.visitor_name ? c.visitor_name : "Anonymous visitor"}
+                                                {c.visitor_email ? ` · ${c.visitor_email}` : ""}
+                                            </div>
+                                            <div className="mt-1 font-mono text-xs text-neutral-500">Session {c.session_id.slice(-10)}</div>
+                                        </div>
+                                        <div className="text-right font-mono-label text-neutral-500">
+                                            {c.updated_at?.substring(0, 16).replace("T", " ")}
+                                        </div>
+                                    </div>
+                                    <div className="max-h-80 overflow-y-auto p-4 space-y-3">
+                                        {(c.messages || []).map((m, i) => (
+                                            <div key={i} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
+                                                <div className={`max-w-[80%] whitespace-pre-wrap border px-3 py-2 text-sm ${m.role === "user" ? "border-brand-void bg-brand-void text-brand-surface" : "border-brand-subtle bg-brand-base text-brand-void"}`}>
+                                                    {m.content}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            ))}
                         </div>
                     </TabsContent>
                 </Tabs>

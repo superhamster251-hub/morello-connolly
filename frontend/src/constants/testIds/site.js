@@ -65,6 +65,15 @@ export const CHECKOUT_RESULT = {
     homeBtn: 'checkout-result-home-btn',
 };
 
+export const CHATBOT = {
+    button: 'chatbot-toggle-btn',
+    panel: 'chatbot-panel',
+    input: 'chatbot-input',
+    sendBtn: 'chatbot-send-btn',
+    closeBtn: 'chatbot-close-btn',
+    messages: 'chatbot-messages',
+};
+
 export const ADMIN = {
     emailInput: 'admin-email-input',
     passwordInput: 'admin-password-input',
@@ -74,7 +83,9 @@ export const ADMIN = {
     tabPurchases: 'admin-tab-purchases',
     tabContacts: 'admin-tab-contacts',
     tabOverview: 'admin-tab-overview',
+    tabChats: 'admin-tab-chats',
     revenue: 'admin-revenue',
     bookingsCount: 'admin-bookings-count',
     purchasesCount: 'admin-purchases-count',
+    chatsCount: 'admin-chats-count',
 };

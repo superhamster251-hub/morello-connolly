@@ -22,6 +22,9 @@ from emergentintegrations.payments.stripe.checkout import (
     CheckoutStatusResponse,
     CheckoutSessionRequest,
 )
+from emergentintegrations.llm.chat import LlmChat, UserMessage, TextDelta, StreamDone
+from fastapi.responses import StreamingResponse
+import json
 
 # ────────────────────────────────────────────
 # Config
@@ -31,6 +34,7 @@ DB_NAME = os.environ['DB_NAME']
 JWT_SECRET = os.environ['JWT_SECRET']
 JWT_ALGORITHM = "HS256"
 STRIPE_API_KEY = os.environ['STRIPE_API_KEY']
+EMERGENT_LLM_KEY = os.environ.get('EMERGENT_LLM_KEY')
 
 client = AsyncIOMotorClient(MONGO_URL)
 db = client[DB_NAME]
@@ -73,6 +77,53 @@ MONTHLY_MAINTENANCE_PRICES = {
 PHOTO_REFRESH_TIERS = {"professional", "premium"}
 
 # ────────────────────────────────────────────
+# Chatbot config
+# ────────────────────────────────────────────
+CHAT_SYSTEM_PROMPT = """You are the friendly, helpful concierge for Morello Connolly — a two-person web-design studio based in San Francisco, CA, founded by Ryan Morello and Ben Connolly. Your job is to answer questions about our services and gently guide visitors toward booking a discovery call or purchasing a package.
+
+## Company facts (never contradict these)
+- Studio: Morello Connolly, San Francisco, CA. Serves the Bay Area but also builds remotely.
+- Founders (personal, hands-on — every project is handled by them directly):
+    • Ryan Morello — design & photography — 510-631-5990
+    • Ben Connolly — build & systems — 510-827-3471
+- Turnaround: most sites go live in 7–14 days.
+- Payments handled via Stripe checkout.
+
+## Packages (one-time price)
+1. **The Essential Package — $300** — Custom-designed 1–4 page site, curated stock photography, mobile-responsive, basic SEO, contact form. Optional add-on: $10/mo monthly stock photo refresh (rotates in fresh stock imagery).
+
+2. **The Creator Package — $500** — Everything in Essential PLUS custom photos (we come out and shoot), meeting scheduler on the site, up to 8 pages, analytics dashboard. Optional add-on: $20/mo monthly upkeep (custom domain, hosting, backups, minor updates) — includes a quarterly custom photo re-shoot at no extra cost.
+
+3. **The Executive Package — $750** — Everything in Creator PLUS credit card / Stripe terminals, email list & newsletter setup, priority build queue. Same $20/mo optional monthly upkeep with quarterly photo re-shoot bonus.
+
+## How to help visitors
+- If they don't know which package fits, ask what they're building (café, boutique, service business, portfolio, etc.) and recommend a tier with a one-sentence rationale.
+- If they want to buy, tell them to scroll to the "Packages" section and click Purchase on the tier they want.
+- If they want to talk first, tell them to scroll to the "Schedule" section on the page and pick a date + time.
+- If they ask something you don't know (custom quotes, timelines longer than 2 weeks, exotic tech), offer to have Ryan or Ben call/text them and ask for their name + phone.
+- Keep replies short (2–4 sentences typically). Warm, direct, plain-language — no corporate fluff, no emojis.
+
+## Constraints
+- Never invent prices, features, or promises not listed above.
+- Never claim to be human — if asked, say you're the studio's AI concierge and can connect them with Ryan or Ben directly.
+- Do not collect passwords, credit-card numbers, or payment details in chat — direct them to secure Stripe checkout.
+"""
+
+# In-memory chat sessions (per-instance). Full transcript persisted to Mongo.
+CHAT_SESSIONS: dict = {}
+
+def get_chat(session_id: str) -> "LlmChat":
+    if session_id not in CHAT_SESSIONS:
+        if not EMERGENT_LLM_KEY:
+            raise HTTPException(status_code=500, detail="Chat service unavailable")
+        CHAT_SESSIONS[session_id] = LlmChat(
+            api_key=EMERGENT_LLM_KEY,
+            session_id=session_id,
+            system_message=CHAT_SYSTEM_PROMPT,
+        ).with_model("anthropic", "claude-sonnet-4-6")
+    return CHAT_SESSIONS[session_id]
+
+# ────────────────────────────────────────────
 # Models
 # ────────────────────────────────────────────
 class LoginPayload(BaseModel):
@@ -100,6 +151,12 @@ class CheckoutCreate(BaseModel):
     customer_email: EmailStr
     customer_phone: Optional[str] = ""
     include_monthly: Optional[bool] = False   # $20/mo custom domain + upkeep (first month charged today)
+
+class ChatMessageCreate(BaseModel):
+    session_id: str
+    message: str
+    visitor_name: Optional[str] = ""
+    visitor_email: Optional[str] = ""
 
 # ────────────────────────────────────────────
 # Auth helpers
@@ -410,6 +467,7 @@ async def admin_summary(admin: dict = Depends(get_current_admin)):
     total_bookings = await db.bookings.count_documents({})
     total_contacts = await db.contacts.count_documents({})
     total_paid = await db.purchases.count_documents({"payment_status": "paid"})
+    total_chats = await db.chat_sessions.count_documents({})
     pipeline = [
         {"$match": {"payment_status": "paid"}},
         {"$group": {"_id": None, "total": {"$sum": "$amount"}}},
@@ -420,8 +478,74 @@ async def admin_summary(admin: dict = Depends(get_current_admin)):
         "bookings": total_bookings,
         "contacts": total_contacts,
         "paid_purchases": total_paid,
+        "chats": total_chats,
         "revenue": revenue,
     }
+
+@api.get("/admin/chats")
+async def admin_chats(admin: dict = Depends(get_current_admin)):
+    items = await db.chat_sessions.find({}, {"_id": 0}).sort("updated_at", -1).to_list(200)
+    return {"items": items}
+
+# ────────────────────────────────────────────
+# Chatbot (public, streaming SSE)
+# ────────────────────────────────────────────
+async def _persist_chat_turn(session_id: str, user_msg: str, assistant_msg: str,
+                              visitor_name: str, visitor_email: str) -> None:
+    now = datetime.now(timezone.utc).isoformat()
+    turn_user = {"role": "user", "content": user_msg, "at": now}
+    turn_asst = {"role": "assistant", "content": assistant_msg, "at": now}
+    await db.chat_sessions.update_one(
+        {"session_id": session_id},
+        {
+            "$setOnInsert": {"session_id": session_id, "created_at": now},
+            "$set": {
+                "updated_at": now,
+                "visitor_name": visitor_name or "",
+                "visitor_email": (visitor_email or "").lower(),
+            },
+            "$push": {"messages": {"$each": [turn_user, turn_asst]}},
+        },
+        upsert=True,
+    )
+
+@api.post("/chat/message")
+async def chat_message(payload: ChatMessageCreate):
+    if not payload.message or not payload.message.strip():
+        raise HTTPException(status_code=400, detail="Empty message")
+    if not EMERGENT_LLM_KEY:
+        raise HTTPException(status_code=503, detail="Chat service is not configured")
+
+    chat = get_chat(payload.session_id)
+
+    async def event_generator():
+        full = ""
+        try:
+            async for event in chat.stream_message(UserMessage(text=payload.message)):
+                if isinstance(event, TextDelta):
+                    full += event.content
+                    yield f"data: {json.dumps({'delta': event.content})}\n\n"
+                elif isinstance(event, StreamDone):
+                    yield f"data: {json.dumps({'done': True})}\n\n"
+                    break
+        except Exception as e:
+            logger.error(f"chat stream error: {e}")
+            yield f"data: {json.dumps({'error': 'chat error'})}\n\n"
+        finally:
+            if full:
+                try:
+                    await _persist_chat_turn(
+                        payload.session_id, payload.message, full,
+                        payload.visitor_name or "", payload.visitor_email or "",
+                    )
+                except Exception as e:
+                    logger.error(f"chat persist error: {e}")
+
+    return StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"},
+    )
 
 # ────────────────────────────────────────────
 # Wire up

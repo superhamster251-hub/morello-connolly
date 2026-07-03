@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import Marquee from "@/components/site/Marquee";
+import ChatBot from "@/components/site/ChatBot";
 import { NAV, HERO, PRICING, FOUNDERS, SCHEDULE, CONTACT } from "@/constants/testIds";
 
 const HERO_IMG = "https://images.pexels.com/photos/545575/pexels-photo-545575.jpeg";
@@ -696,6 +697,7 @@ export default function Home() {
             <Testimonials />
             <Contact />
             <Footer />
+            <ChatBot />
         </div>
     );
 }
