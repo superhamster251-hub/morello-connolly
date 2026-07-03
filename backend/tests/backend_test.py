@@ -41,6 +41,12 @@ def test_get_packages(s):
     pkgs = r.json()["packages"]
     ids = {p["id"]: p["amount"] for p in pkgs}
     assert ids == {"starter": 300.0, "professional": 500.0, "premium": 750.0}
+    names = {p["id"]: p["name"] for p in pkgs}
+    assert names == {
+        "starter": "The Essential Package",
+        "professional": "The Creator Package",
+        "premium": "The Executive Package",
+    }
 
 
 # ─── Bookings ────────────────────────────────────────

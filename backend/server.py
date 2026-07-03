@@ -47,19 +47,19 @@ api = APIRouter(prefix="/api")
 PACKAGES = {
     "starter": {
         "id": "starter",
-        "name": "Starter",
+        "name": "The Essential Package",
         "amount": 300.00,
         "description": "Website with high-quality stock photos.",
     },
     "professional": {
         "id": "professional",
-        "name": "Professional",
+        "name": "The Creator Package",
         "amount": 500.00,
         "description": "Website with custom professional photos of you & your business, edited by us.",
     },
     "premium": {
         "id": "premium",
-        "name": "Premium",
+        "name": "The Executive Package",
         "amount": 750.00,
         "description": "Website with credit card terminals, email list setup, and integrated meeting scheduler.",
     },

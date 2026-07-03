@@ -145,9 +145,15 @@ const BuyDialog = ({ pkg }) => {
     const [includeMonthly, setIncludeMonthly] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    const hasPhotoPerk = PHOTO_REFRESH_TIERS.has(pkg.id);
+    const hasCustomPhotoPerk = PHOTO_REFRESH_TIERS.has(pkg.id);
+    const isEssential = pkg.id === "starter";
     const monthlyAmount = includeMonthly ? MONTHLY_UPKEEP_PRICE : 0;
     const total = pkg.amount + monthlyAmount;
+
+    const monthlyTitle = isEssential ? "Add monthly stock photo refresh" : "Add monthly upkeep";
+    const monthlyDesc = isEssential
+        ? "We rotate in fresh stock photography every month so your site never feels stale. First month is charged today; subsequent months billed separately once your site is live."
+        : "Custom domain, hosting, backups & minor updates. First month is charged today; subsequent months billed separately once your site is live.";
 
     const submit = async () => {
         if (!name || !email) return toast.error("Name and email required");
@@ -178,7 +184,7 @@ const BuyDialog = ({ pkg }) => {
                 </div>
                 {includeMonthly && (
                     <div className="mt-1 flex items-baseline justify-between text-sm text-brand-muted">
-                        <span>+ First month upkeep</span>
+                        <span>+ First month {isEssential ? "photo refresh" : "upkeep"}</span>
                         <span>${MONTHLY_UPKEEP_PRICE.toFixed(2)}</span>
                     </div>
                 )}
@@ -188,7 +194,7 @@ const BuyDialog = ({ pkg }) => {
                 </div>
             </div>
 
-            {/* Optional monthly add-on */}
+            {/* Tier-aware monthly add-on */}
             <label className="flex cursor-pointer items-start gap-3 border border-brand-void bg-brand-surface p-4 hover:bg-brand-base">
                 <Checkbox
                     data-testid={PRICING.checkoutMonthlyToggle}
@@ -198,13 +204,11 @@ const BuyDialog = ({ pkg }) => {
                 />
                 <div className="flex-1">
                     <div className="flex items-baseline justify-between gap-2">
-                        <span className="font-heading text-base font-bold">Add monthly upkeep</span>
+                        <span className="font-heading text-base font-bold">{monthlyTitle}</span>
                         <span className="font-mono text-sm text-brand-muted">${MONTHLY_UPKEEP_PRICE}/mo</span>
                     </div>
-                    <p className="mt-1 text-xs text-brand-muted">
-                        Custom domain, hosting, backups & minor updates. First month is charged today; subsequent months billed separately once your site is live.
-                    </p>
-                    {hasPhotoPerk && (
+                    <p className="mt-1 text-xs text-brand-muted">{monthlyDesc}</p>
+                    {hasCustomPhotoPerk && includeMonthly && (
                         <div className="mt-3 flex items-start gap-2 border-l-2 border-brand-signal bg-brand-base px-3 py-2">
                             <Camera className="mt-0.5 h-4 w-4 shrink-0 text-brand-signal" />
                             <div>
@@ -247,22 +251,22 @@ const BuyDialog = ({ pkg }) => {
 const Services = () => {
     const tiers = [
         {
-            id: "starter", name: "Starter", price: 300, tid: PRICING.starterCard, btnTid: PRICING.starterBuyBtn,
+            id: "starter", label: "Essential", name: "The Essential Package", price: 300, tid: PRICING.starterCard, btnTid: PRICING.starterBuyBtn,
             icon: Sparkles,
             tagline: "The essentials, done well.",
             features: ["Custom-designed 1-4 page site", "Curated stock photography", "Mobile-first responsive", "Basic SEO setup", "Contact form"],
         },
         {
-            id: "professional", name: "Professional", price: 500, tid: PRICING.professionalCard, btnTid: PRICING.professionalBuyBtn,
+            id: "professional", label: "Creator", name: "The Creator Package", price: 500, tid: PRICING.professionalCard, btnTid: PRICING.professionalBuyBtn,
             icon: Camera, featured: true,
             tagline: "Photos we take, editing we obsess over.",
-            features: ["Everything in Starter", "On-site photography session", "Professional photo editing", "Up to 8 pages", "Analytics dashboard"],
+            features: ["Everything in Essential", "On-site photography session", "Professional photo editing", "Up to 8 pages", "Analytics dashboard"],
         },
         {
-            id: "premium", name: "Premium", price: 750, tid: PRICING.premiumCard, btnTid: PRICING.premiumBuyBtn,
+            id: "premium", label: "Executive", name: "The Executive Package", price: 750, tid: PRICING.premiumCard, btnTid: PRICING.premiumBuyBtn,
             icon: CreditCard,
             tagline: "Sell, book & grow — from day one.",
-            features: ["Everything in Professional", "Credit card / Stripe terminals", "Email list & newsletter setup", "Meeting scheduler", "Priority build queue"],
+            features: ["Everything in Creator", "Credit card / Stripe terminals", "Email list & newsletter setup", "Meeting scheduler", "Priority build queue"],
         },
     ];
 
@@ -277,7 +281,7 @@ const Services = () => {
                         </h2>
                     </div>
                     <p className="max-w-xl text-brand-muted md:col-span-8 md:text-lg">
-                        Three fixed-price packages. No hourly billing surprises. Add optional monthly upkeep at checkout — Professional and Premium buyers also get a quarterly photo refresh included.
+                        Three fixed-price packages. No hourly billing surprises. Add optional monthly upkeep at checkout — Creator and Executive buyers get a quarterly custom photo re-shoot included; Essential buyers can add a monthly stock photo refresh.
                     </p>
                 </div>
 
@@ -293,7 +297,7 @@ const Services = () => {
                                     </div>
                                 )}
                                 <Icon className={`h-8 w-8 ${t.featured ? "text-brand-signal" : "text-brand-void"}`} />
-                                <div className="mt-6 font-mono-label opacity-70">{t.name.toUpperCase()}</div>
+                                <div className="mt-6 font-mono-label opacity-70">{t.label.toUpperCase()}</div>
                                 <div className="mt-2 flex items-baseline gap-1 font-heading font-black tracking-tighter">
                                     <span className="text-6xl">${t.price}</span>
                                     <span className="font-mono text-sm opacity-60">/one-time</span>
@@ -311,12 +315,12 @@ const Services = () => {
                                     <DialogTrigger asChild>
                                         <Button data-testid={t.btnTid}
                                             className={`mt-8 h-12 w-full rounded-none font-mono-label ${t.featured ? "bg-brand-signal text-brand-surface hover:bg-brand-signalHover" : "bg-brand-void text-brand-surface hover:bg-brand-signal"}`}>
-                                            Purchase {t.name} →
+                                            Purchase {t.label} →
                                         </Button>
                                     </DialogTrigger>
                                     <DialogContent className="rounded-none border-brand-void bg-brand-base sm:max-w-md">
                                         <DialogHeader>
-                                            <DialogTitle className="font-heading text-2xl font-black tracking-tighter">Buy {t.name}</DialogTitle>
+                                            <DialogTitle className="font-heading text-2xl font-black tracking-tighter">{t.name}</DialogTitle>
                                         </DialogHeader>
                                         <BuyDialog pkg={{ id: t.id, name: t.name, amount: t.price }} />
                                     </DialogContent>
