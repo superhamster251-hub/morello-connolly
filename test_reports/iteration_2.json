@@ -1,0 +1,19 @@
+{
+  "summary": "Re-tested Schedule calendar CSS fix. Selected day now visibly renders with bg-brand-signal (rgb(255,42,0)) and white text. Full booking flow works end-to-end (date -> time slot -> name -> email -> submit -> success message). Past dates and Sundays properly disabled. Month navigation buttons render.",
+  "backend_issues": {"critical": [], "minor": []},
+  "frontend_issues": {
+    "ui_bugs": [],
+    "integration_issues": [],
+    "design_issues": []
+  },
+  "test_report_links": [],
+  "action_items": [],
+  "critical_code_review_comments": [],
+  "updated_files": [],
+  "success_rate": {"backend": "N/A", "frontend": "100%"},
+  "seed_data_creation": "None",
+  "retest_needed": false,
+  "should_main_agent_self_test": false,
+  "context_for_next_testing_agent": "Calendar fix verified: selected day computed style backgroundColor=rgb(255,42,0), color=rgb(255,255,255), class contains bg-brand-signal, aria-selected=true. Full form submission returns success message 'Confirmed - See you soon.' Time slot dropdown offers 8 options. 401 console errors observed on unrelated resources (likely admin endpoints) but not affecting the public schedule flow.",
+  "rca of the issue": "Original issue: Calendar selected-day used default shadcn bg-primary (near-black) over black brand-void background, making selection invisible. Fix overrode classNames.day_selected to bg-brand-signal (#FF2A00) with white text — now clearly visible. Verified via computed styles."
+}

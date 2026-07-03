@@ -452,7 +452,27 @@ const Schedule = () => {
                                     selected={date}
                                     onSelect={setDate}
                                     disabled={isPast}
-                                    className="rounded-none border border-brand-surface bg-brand-void text-brand-surface"
+                                    className="rounded-none border border-brand-surface bg-brand-void p-3 text-brand-surface"
+                                    classNames={{
+                                        months: "flex flex-col space-y-4",
+                                        month: "space-y-4",
+                                        caption: "flex justify-center pt-1 relative items-center text-brand-surface",
+                                        caption_label: "text-sm font-medium tracking-tight",
+                                        nav_button: "h-8 w-8 bg-transparent border border-brand-surface p-0 opacity-80 hover:opacity-100 hover:bg-brand-surface hover:text-brand-void inline-flex items-center justify-center rounded-none",
+                                        nav_button_previous: "absolute left-1",
+                                        nav_button_next: "absolute right-1",
+                                        table: "w-full border-collapse",
+                                        head_row: "flex",
+                                        head_cell: "text-neutral-500 w-9 font-mono text-[0.65rem] uppercase tracking-widest",
+                                        row: "flex w-full mt-2",
+                                        cell: "relative p-0 text-center text-sm focus-within:relative focus-within:z-20",
+                                        day: "h-9 w-9 p-0 font-medium text-brand-surface rounded-none hover:bg-brand-signal hover:text-brand-surface aria-selected:opacity-100 inline-flex items-center justify-center transition-colors",
+                                        day_selected: "!bg-brand-signal !text-brand-surface hover:!bg-brand-signalHover focus:!bg-brand-signal",
+                                        day_today: "border border-brand-signal text-brand-surface",
+                                        day_outside: "text-neutral-600 opacity-40",
+                                        day_disabled: "text-neutral-600 opacity-30 cursor-not-allowed hover:!bg-transparent",
+                                        day_hidden: "invisible",
+                                    }}
                                 />
                             </div>
                         </div>
