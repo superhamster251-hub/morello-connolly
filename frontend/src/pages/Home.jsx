@@ -160,18 +160,40 @@ const BuyDialog = ({ pkg }) => {
     const submit = async () => {
         if (!name || !email) return toast.error("Name and email required");
         setLoading(true);
+
+        const payload = {
+            package_id: pkg.id,
+            origin_url: window.location.origin,
+            customer_name: name,
+            customer_email: email,
+            customer_phone: phone,
+            include_monthly: includeMonthly,
+        };
+
+        // Retry once on transient network / 5xx errors — the Vercel→backend hop
+        // occasionally 502s, and a single retry masks the flakiness.
+        const attempt = async () => api.post("/checkout/session", payload, { timeout: 15000 });
+        const isRetryable = (err) => {
+            if (!err.response) return true;                 // network / CORS / timeout
+            return err.response.status >= 500;              // 5xx
+        };
+
         try {
-            const { data } = await api.post("/checkout/session", {
-                package_id: pkg.id,
-                origin_url: window.location.origin,
-                customer_name: name,
-                customer_email: email,
-                customer_phone: phone,
-                include_monthly: includeMonthly,
-            });
+            let data;
+            try {
+                ({ data } = await attempt());
+            } catch (err) {
+                if (!isRetryable(err)) throw err;
+                await new Promise((r) => setTimeout(r, 800));
+                ({ data } = await attempt());
+            }
             window.location.href = data.url;
         } catch (e) {
-            toast.error(e.response?.data?.detail || "Checkout failed");
+            const status = e.response?.status;
+            const msg = e.response?.data?.detail
+                || (status ? `Checkout server returned ${status}. Please try again.`
+                           : "Couldn't reach checkout. Check your connection and try again — if it keeps failing text Ryan at 510-631-5990.");
+            toast.error(msg);
             setLoading(false);
         }
     };
