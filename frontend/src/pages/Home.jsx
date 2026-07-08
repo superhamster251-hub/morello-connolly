@@ -290,7 +290,7 @@ const Services = () => {
             id: "premium", label: "Executive", name: "The Executive Package", price: 750, tid: PRICING.premiumCard, btnTid: PRICING.premiumBuyBtn,
             icon: CreditCard,
             tagline: "Sell, book & scale your business — from day one.",
-            features: ["Everything in Creator", "Credit card / Stripe terminals", "Email list & newsletter setup", "Priority build queue"],
+            features: ["Everything in Creator", "AI customer assistant chatbot", "Credit card / Stripe terminals", "Email list & newsletter setup", "Priority build queue"],
         },
     ];
 
